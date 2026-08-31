@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>French Study — 우리 토끼 프랑스어 공부 🐰</title>
+<style>
+  :root{
+    --bg:#fdf4ee; --card:#fffdfb; --ink:#5a4232; --sub:#a1806d;
+    --accent:#ec6a97; --accent-soft:#fceef3; --line:#f2ded4;
+    --green:#16a06a; --red:#e5484d; --amber:#c98a04;
+    --radius:16px; --shadow:0 1px 3px rgba(120,70,50,.06), 0 8px 24px rgba(236,106,151,.10);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.55; min-height:100vh;
+  }
+  .app{display:flex; min-height:100vh; align-items:stretch;}
+  .wrap{flex:1; min-width:0; max-width:760px; margin:0 auto; padding:20px 16px 80px;}
+  .brand{font-size:20px; font-weight:800; letter-spacing:-.3px;}
+  .brand span{color:var(--accent);}
+  /* sidebar */
+  .sidebar{
+    width:268px; flex-shrink:0; background:#fff; border-right:1px solid var(--line);
+    padding:18px 12px 14px; display:flex; flex-direction:column; gap:10px;
+    position:sticky; top:0; height:100vh; overflow:hidden;
+  }
+  .sidebar .brand{padding:0 6px 4px;}
+  .nav-label{font-size:11.5px; font-weight:700; color:#c2a391; letter-spacing:.5px; padding:6px 6px 2px;}
+  .nav-lessons{flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:2px;}
+  .nav-item{display:flex; align-items:center; gap:9px; padding:7px 8px; border-radius:10px; cursor:pointer; font-size:13px;}
+  .nav-item:hover{background:var(--accent-soft);}
+  .nav-item.active{background:var(--accent-soft); outline:1.5px solid #f5c2d4;}
+  .nav-thumb{width:54px; height:30px; border-radius:6px; object-fit:cover; background:#f3e3da; flex-shrink:0;}
+  .nav-meta{flex:1; min-width:0;}
+  .nav-title{font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .nav-sub{font-size:11.5px; color:var(--sub);}
+  .nav-empty{font-size:12.5px; color:#c2a391; padding:8px 6px;}
+  .rev-item{display:flex; gap:10px; padding:12px 6px; border-bottom:1px solid var(--line); align-items:flex-start;}
+  .rev-item:last-child{border-bottom:none;}
+  .rev-item.playing{background:var(--accent-soft); border-radius:10px;}
+  .rev-main{flex:1; min-width:0;}
+  .rev-eng{font-weight:700; font-size:15px;}
+  .rev-kor{font-size:13px; color:var(--sub); margin-top:2px;}
+  .rev-src{font-size:11.5px; color:#c2a391; margin-top:4px;}
+  .rev-btns{display:flex; gap:6px; flex-shrink:0;}
+  .side-foot{border-top:1px solid var(--line); padding-top:10px; display:flex; gap:8px;}
+  .side-foot button{flex:1;}
+  .menu-btn{display:none;}
+  @media(max-width:900px){
+    .sidebar{
+      position:fixed; left:0; top:0; z-index:50; transform:translateX(-105%);
+      transition:transform .2s ease; box-shadow:var(--shadow);
+    }
+    .sidebar.open{transform:none;}
+    .menu-btn{
+      display:flex; align-items:center; justify-content:center;
+      position:fixed; left:12px; top:12px; z-index:60; width:40px; height:40px;
+      border-radius:10px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow);
+    }
+    .wrap{padding-top:60px;}
+  }
+  .banner{margin:0 0 18px; border-radius:var(--radius); overflow:hidden;
+    box-shadow:var(--shadow); border:1px solid var(--line);}
+  .banner img{display:block; width:100%; height:auto;}
+  body[data-view="study"] .banner{display:none;}
+  /* 입력 소스 A/B 탭 */
+  .src-tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .src-tab{
+    flex:1; background:#fff; border:1.5px solid var(--line); color:var(--sub);
+    border-radius:12px; padding:11px 10px; font-size:13.5px; font-weight:700;
+  }
+  .src-tab:hover{filter:none; border-color:#f5c2d4;}
+  .src-tab.active{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:800;}
+  /* 복습 저장 버튼 강조 */
+  #btnReview{
+    background:linear-gradient(135deg,#ff8fb3,#ec6a97); color:#fff; font-weight:800;
+    border-radius:99px; padding:7px 16px; box-shadow:0 2px 8px rgba(236,106,151,.35);
+  }
+  #btnReview:hover{filter:brightness(1.06);}
+  #btnReview.saved{
+    background:linear-gradient(135deg,#ffd166,#f4a83d); color:#6b4a00;
+    box-shadow:0 2px 8px rgba(244,168,61,.35);
+  }
+  /* 텍스트(스크립트) 교재: 영상 관련 UI 숨김 */
+  body.text-lesson .player-box{display:none;}
+  body.text-lesson #btnCont{display:none;}
+  body.text-lesson #segTime{display:none;}
+  body.text-lesson .controls{display:none;}
+  body.text-lesson .script-line .t{display:none;}
+  body.text-lesson .script-scroll{max-height:460px;}
+  .nav-thumb.txt, .lesson-thumb.txt{
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-soft); font-size:17px;
+  }
+  .lesson-thumb.txt{font-size:24px;}
+  .view{display:none;}
+  .view.active{display:block;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-bottom:16px;
+  }
+  h2{font-size:16px; font-weight:700; margin-bottom:12px;}
+  .hint{font-size:13px; color:var(--sub);}
+  button{
+    font-family:inherit; font-size:14px; font-weight:600; border:none; cursor:pointer;
+    border-radius:10px; padding:10px 16px; background:var(--accent-soft); color:var(--accent);
+    transition:filter .15s;
+  }
+  button:hover{filter:brightness(.96);}
+  button:disabled{opacity:.45; cursor:default;}
+  button.primary{background:var(--accent); color:#fff;}
+  button.ghost{background:transparent; color:var(--sub); border:1px solid var(--line);}
+  button.danger{background:#fdeeee; color:var(--red);}
+  button.small{padding:6px 10px; font-size:12.5px; border-radius:8px;}
+  input[type=text], input[type=password], select, textarea{
+    font-family:inherit; font-size:14px; width:100%; padding:11px 12px;
+    border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);
+  }
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--accent); outline-offset:-1px;}
+  .row{display:flex; gap:8px; align-items:center;}
+  .row > input{flex:1;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--sub);}
+  /* lesson list */
+  .lesson-item{
+    display:flex; align-items:center; gap:12px; padding:14px 6px; border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .lesson-item:last-child{border-bottom:none;}
+  .lesson-item:hover{background:var(--accent-soft); border-radius:10px;}
+  .lesson-thumb{
+    width:84px; height:47px; border-radius:8px; object-fit:cover; background:#f3e3da; flex-shrink:0;
+  }
+  .lesson-meta{flex:1; min-width:0;}
+  .lesson-title{font-weight:700; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .lesson-sub{font-size:12.5px; color:var(--sub); margin-top:2px;}
+  .status-line{margin-top:10px; font-size:13.5px; color:var(--sub); display:none;}
+  .status-line.on{display:block;}
+  .spinner{
+    display:inline-block; width:14px; height:14px; border:2px solid var(--accent);
+    border-top-color:transparent; border-radius:50%; animation:spin .8s linear infinite;
+    vertical-align:-2px; margin-right:6px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  /* study view */
+  .topnav{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .topnav .title{flex:1; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .counter{font-size:13px; color:var(--sub); font-variant-numeric:tabular-nums;}
+  .player-box{
+    position:relative; width:100%; aspect-ratio:16/9; border-radius:var(--radius);
+    overflow:hidden; background:#000; margin-bottom:14px; box-shadow:var(--shadow);
+  }
+  .player-box iframe{position:absolute; inset:0; width:100%; height:100%;}
+  .sent-nav{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .sent-nav .spacer{flex:1; text-align:center;}
+  /* 학습 화면 2단 레이아웃 (노트북) */
+  .script-scroll{max-height:270px; overflow-y:auto; padding:2px; position:relative;}
+  .script-line{
+    display:flex; gap:10px; padding:7px 9px; border-radius:8px; cursor:pointer;
+    color:#c3a692; font-size:14px; line-height:1.45; align-items:baseline;
+    transition:background .12s;
+  }
+  .script-line:hover{background:var(--accent-soft); color:var(--accent);}
+  .script-line .t{font-size:11px; color:#ddc8ba; font-variant-numeric:tabular-nums; flex-shrink:0; min-width:32px;}
+  .script-line.cur{color:var(--ink); font-weight:800; font-size:16.5px; background:var(--accent-soft);}
+  .script-line.cur .t{color:var(--accent); font-weight:600;}
+  @media(min-width:1020px){
+    body[data-view="study"] .wrap{max-width:1280px;}
+    .study-cols{display:grid; grid-template-columns:minmax(0,11fr) minmax(0,9fr); gap:18px; align-items:start;}
+    .study-left{position:sticky; top:12px;}
+  }
+  @media(max-width:1019px){
+    .player-box{position:sticky; top:6px; z-index:30;}
+  }
+  .korean{font-size:15px; color:var(--sub); margin-bottom:14px;}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;}
+  .chip{
+    background:var(--accent-soft); color:var(--accent); font-size:12.5px; font-weight:600;
+    padding:4px 10px; border-radius:99px;
+  }
+  .chip b{font-weight:800;}
+  .note{
+    font-size:13.5px; background:#fdf7e8; border:1px solid #f0e3bd; color:#6b5615;
+    border-radius:10px; padding:8px 12px; margin-bottom:8px;
+  }
+  .note.pron{background:#eefaf4; border-color:#c9ecd9; color:#0e6b46;}
+  .controls{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+  .adjust{display:flex; gap:6px; align-items:center; font-size:12.5px; color:var(--sub); flex-wrap:wrap; margin-top:10px;}
+  .timecode{font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--sub);}
+  canvas.wave{width:100%; height:64px; background:#3a2a22; border-radius:10px; display:block;}
+  .cmp-block{margin-bottom:16px;}
+  .cmp-block:last-of-type{margin-bottom:0;}
+  .cmp-head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;}
+  .cmp-label{font-weight:800; font-size:13.5px;}
+  .cmp-label.ai{color:#0e9f72;}
+  .cmp-label.me{color:var(--accent);}
+  .rec-list{margin-top:10px; display:flex; flex-direction:column; gap:6px;}
+  .rec-item{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--sub);}
+  .rec-dot{color:var(--red); animation:blink 1s infinite;}
+  @keyframes blink{50%{opacity:.2;}}
+  .footer-note{font-size:12px; color:#c2a391; text-align:center; margin-top:24px;}
+  a{color:var(--accent);}
+</style>
+</head>
+<body>
+<button class="menu-btn" id="btnMenu" aria-label="메뉴">☰</button>
+
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">🐰 French <span>Study</span></div>
+  <button class="primary" id="btnNavNew">＋ 새 교재 추가</button>
+  <div class="nav-item" id="navReview" style="font-weight:700;">⭐ 복습문장모음&nbsp;<span class="nav-sub" id="navReviewCount"></span></div>
+  <div class="nav-label">내 교재</div>
+  <div class="nav-lessons" id="navLessons"></div>
+  <div class="side-foot">
+    <button class="ghost small" id="btnGoSettings">⚙️ 설정</button>
+  </div>
+</aside>
+
+<div class="wrap">
+
+  <div class="banner"><img src="assets/banner.jpg" alt="우리 토끼 프랑스어 공부 따봉~ 👍"></div>
+
+  <!-- ===== 목록 화면 ===== -->
+  <section class="view active" id="view-list">
+    <div class="card">
+      <h2>새 교재 만들기</h2>
+      <div class="src-tabs">
+        <button class="src-tab active" id="tabVideo">🎬 A. YouTube 영상으로</button>
+        <button class="src-tab" id="tabText">📝 B. 프랑스어 스크립트로</button>
+      </div>
+
+      <div id="srcVideo">
+      <div class="row">
+        <input type="text" id="inpUrl" placeholder="https://www.youtube.com/watch?v=..." >
+        <button class="primary" id="btnAnalyze">분석</button>
+      </div>
+      <p class="hint" style="margin-top:8px;">공개 YouTube 영상 주소를 넣으면 Gemini가 문장별 교재(해석·단어·구문)를 만듭니다.</p>
+      <details style="margin-top:12px;">
+        <summary style="cursor:pointer; font-size:13.5px; font-weight:600; color:var(--accent);">🎯 싱크 정확하게 만들기 — YouTube 자막 붙여넣기 (권장)</summary>
+        <p class="hint" style="margin:8px 0;">
+          YouTube 영상 페이지에서 <b>설명 펼치기 → "스크립트 표시(Show transcript)"</b> → 스크립트 전체를 드래그해 복사한 뒤 아래에 붙여넣으세요.
+          자막의 공식 타임스탬프를 그대로 사용해서 <b>싱크가 정확</b>해집니다. (SRT 자막 파일 내용도 지원)
+        </p>
+        <textarea id="inpTranscript" rows="6" placeholder="0:00&#10;over the last 48 hours I have been&#10;0:03&#10;asked countless times ..."></textarea>
+        <div class="row" style="margin-top:8px;">
+          <button class="small ghost" id="btnSrtFile">📄 SRT/VTT 자막 파일 선택</button>
+          <span class="hint">"스크립트 표시"가 없는 영상은 downsub.com에서 URL로 자막 파일을 받아 선택하세요. (CC 자막이 있는 영상이면 가능)</span>
+        </div>
+        <input type="file" id="fileSrt" accept=".srt,.vtt,.txt" style="display:none;">
+      </details>
+      </div><!-- /#srcVideo -->
+
+      <div id="srcText" style="display:none;">
+        <div class="field">
+          <label>교재 제목 <span class="hint">(선택 — 비워 두면 AI가 지어 줍니다)</span></label>
+          <input type="text" id="inpTextTitle" placeholder="예: Le Petit Prince — 1장">
+        </div>
+        <textarea id="inpFrText" rows="8" placeholder="가지고 있는 프랑스어 스크립트/텍스트를 붙여넣으세요.&#10;&#10;예) Bonjour à tous ! Aujourd'hui, nous allons parler de..."></textarea>
+        <div class="row" style="margin-top:10px;">
+          <button class="primary" id="btnAnalyzeText">분석</button>
+          <span class="hint">Gemini가 문장별 교재(해석·단어·구문·발음)를 만듭니다. 영상 없이 AI 원어민 음성으로 학습해요.</span>
+        </div>
+      </div><!-- /#srcText -->
+
+      <div class="status-line" id="analyzeStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>내 교재</h2>
+      <div id="lessonList"></div>
+      <p class="hint" id="emptyHint">아직 교재가 없습니다. 위에서 영상을 추가하거나, <a href="#" id="btnSample">샘플 교재 불러오기</a>로 화면을 먼저 구경해 보세요.</p>
+    </div>
+
+    <p class="footer-note">데이터는 이 브라우저에만 저장됩니다 · 설정에서 백업(내보내기)을 잊지 마세요</p>
+  </section>
+
+  <!-- ===== 설정 화면 ===== -->
+  <section class="view" id="view-settings">
+    <div class="topnav">
+      <button class="ghost small" id="btnSettingsBack">← 돌아가기</button>
+      <div class="title">설정</div>
+    </div>
+
+    <div class="card">
+      <h2>Gemini API</h2>
+      <div class="field">
+        <label>API 키 <span class="hint">(이 브라우저에만 저장됩니다. 절대 다른 곳에 공유하지 마세요)</span></label>
+        <div class="row">
+          <input type="password" id="inpApiKey" placeholder="AIza...">
+          <button class="small ghost" id="btnToggleKey">보기</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>모델</label>
+        <div class="row">
+          <select id="selModel"></select>
+          <button class="small" id="btnLoadModels">목록 불러오기</button>
+        </div>
+        <p class="hint" style="margin-top:6px;">키 저장 후 "목록 불러오기"를 누르면 내 계정에서 쓸 수 있는 최신 모델을 가져옵니다.</p>
+      </div>
+      <div class="field">
+        <label>TTS 모델 (✨ AI 원어민 듣기)</label>
+        <input type="text" id="inpTtsModel" placeholder="gemini-3.1-flash-tts-preview">
+      </div>
+      <div class="field">
+        <label>구간 재생 여유분 <span class="hint">(문장 앞뒤로 조금 더 재생해서 잘림을 방지)</span></label>
+        <div class="row">
+          <span class="hint">앞</span>
+          <select id="selPadStart" style="width:auto;">
+            <option value="0">0초</option>
+            <option value="0.3">0.3초</option>
+            <option value="0.5" selected>0.5초</option>
+            <option value="0.8">0.8초</option>
+            <option value="1">1초</option>
+          </select>
+          <span class="hint">뒤</span>
+          <select id="selPadEnd" style="width:auto;">
+            <option value="0">0초</option>
+            <option value="0.3">0.3초</option>
+            <option value="0.5">0.5초</option>
+            <option value="0.7" selected>0.7초</option>
+            <option value="1">1초</option>
+            <option value="1.5">1.5초</option>
+          </select>
+        </div>
+      </div>
+      <button class="primary" id="btnSaveSettings">저장</button>
+      <span class="hint" id="saveMsg" style="margin-left:10px;"></span>
+    </div>
+
+    <div class="card">
+      <h2>백업</h2>
+      <p class="hint" style="margin-bottom:10px;">교재·진도 전체를 JSON 파일 하나로 저장/복원합니다. (녹음 파일은 제외)</p>
+      <div class="row">
+        <button id="btnExport">📤 내보내기</button>
+        <button id="btnImport">📥 가져오기</button>
+        <input type="file" id="fileImport" accept=".json" style="display:none;">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>저장 공간</h2>
+      <p class="hint" id="storageInfo">계산 중...</p>
+      <button class="danger small" id="btnClearRecs" style="margin-top:10px;">녹음 전체 삭제</button>
+    </div>
+  </section>
+
+  <!-- ===== 학습 화면 ===== -->
+  <section class="view" id="view-study">
+    <div class="topnav">
+      <button class="ghost small" id="btnStudyBack">← 목록</button>
+      <div class="title" id="studyTitle"></div>
+      <div class="counter" id="studyCounter"></div>
+    </div>
+
+    <div class="study-cols">
+    <div class="study-left">
+      <div class="player-box"><div id="ytplayer"></div></div>
+
+      <div class="card trio-card">
+        <div class="sent-nav">
+          <button id="btnPrev">◀ 이전</button>
+          <button class="primary" id="btnCont">▶ 이어서 재생</button>
+          <div class="spacer timecode" id="segTime"></div>
+          <button id="btnNext">다음 ▶</button>
+        </div>
+        <div class="script-scroll" id="scriptScroll"></div>
+      </div>
+    </div>
+
+    <div class="study-right">
+    <div class="card">
+      <div class="korean" id="sentKorean"></div>
+      <div class="chips" id="sentVocab"></div>
+      <div class="note" id="sentExpr" style="display:none;"></div>
+      <div class="note pron" id="sentPron" style="display:none;"></div>
+
+      <div class="controls">
+        <button class="primary" id="btnPlaySeg">▶ 원문 듣기</button>
+        <button id="btnRepeat3">🔁 3회 반복</button>
+        <button id="btnRepeatInf">♾ 무한 반복</button>
+        <button id="btnStopSeg">⏹ 정지</button>
+        <select id="selRate" style="width:auto;">
+          <option value="0.5">0.5x</option>
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>1.0x</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h2>🗣 발음 비교 연습</h2>
+
+      <div class="cmp-block">
+        <div class="cmp-head">
+          <span class="cmp-label ai">✨ AI 원어민</span>
+          <button class="primary small" id="btnAiTts">▶ 듣기</button>
+          <button class="small" id="btnAiLoop">♾ 무한</button>
+          <select id="selVoice" style="width:auto;">
+            <option value="Kore">👩 여성</option>
+            <option value="Puck">👨 남성</option>
+          </select>
+          <select id="selTtsMode" style="width:auto;">
+            <option value="natural">🗣 자연스럽게</option>
+            <option value="slow">🐢 천천히</option>
+            <option value="expressive">🎭 감정 살려서</option>
+          </select>
+          <button class="small" id="btnReview">☆ 복습에 저장</button>
+        </div>
+        <canvas class="wave" id="aiWaveCanvas" width="720" height="64"></canvas>
+      </div>
+
+      <div class="cmp-block">
+        <div class="cmp-head">
+          <span class="cmp-label me">🎤 내 발음</span>
+          <button class="primary small" id="btnRec">● 녹음 시작</button>
+          <label class="hint" style="cursor:pointer;"><input type="checkbox" id="chkAutoRec" checked> 말하면 시작·멈추면 자동 정지</label>
+          <span id="recStatus" class="hint"></span>
+        </div>
+        <canvas class="wave" id="waveCanvas" width="720" height="64"></canvas>
+        <div class="rec-list" id="recList"></div>
+      </div>
+
+      <div class="cmp-block">
+        <div class="cmp-head">
+          <span class="cmp-label" style="color:#8a63d2;">🔀 겹쳐 보기</span>
+          <span class="hint">AI(초록) + 내 최근 녹음(핑크) — 산·골의 위치가 겹치도록 연습해 보세요</span>
+        </div>
+        <canvas class="wave" id="overlayCanvas" width="720" height="72"></canvas>
+      </div>
+
+      <p class="hint" style="margin-top:10px;">
+        파형의 <b>산이 큰 곳이 강세(stress)</b>, 골은 쉼입니다. AI 파형(초록)의 리듬 — 산·골의 위치와 크기 — 을 보며 따라 읽고,
+        내 파형(핑크)과 모양을 비교해 보세요. 문장당 녹음은 최근 3개까지 보관됩니다.
+      </p>
+    </div>
+    </div><!-- /.study-right -->
+    </div><!-- /.study-cols -->
+  </section>
+
+  <!-- ===== 복습문장모음 화면 ===== -->
+  <section class="view" id="view-review">
+    <div class="topnav">
+      <button class="ghost small" id="btnReviewBack">← 목록</button>
+      <div class="title">⭐ 복습문장모음</div>
+      <div class="counter" id="reviewCounter"></div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:6px;">
+        <button class="primary" id="btnPlayAll">▶ 전체 듣기</button>
+        <button id="btnStopAll">⏹ 정지</button>
+        <span class="hint">저장된 순서대로 AI 음성이 이어서 재생됩니다.</span>
+      </div>
+      <div id="reviewListBox"></div>
+      <p class="hint" id="reviewEmpty" style="margin-top:8px;">아직 저장된 문장이 없습니다. 학습 화면에서 "☆ 복습에 저장"을 눌러 모아보세요.</p>
+    </div>
+  </section>
+
+</div><!-- /.wrap -->
+</div><!-- /.app -->
+
+<script>
+/* =====================================================
+   French Study — 프랑스어 학습 (english-study 기반)
+   저장: localStorage(교재/진도/설정) + IndexedDB(녹음)
+   ===================================================== */
+
+const $ = (id) => document.getElementById(id);
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); },
+  del(k){ localStorage.removeItem(k); }
+};
+
+// ---------- 뷰 전환 ----------
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  $('view-' + name).classList.add('active');
+  document.body.dataset.view = name;
+  if(name === 'settings') refreshStorageInfo();
+  if(name !== 'study'){ stopSegment(); stopTts(); if(recorder && recorder.state === 'recording') stopRecording(); }
+  if(name !== 'review') stopReviewPlayback();
+}
+$('btnGoSettings').onclick = () => { showView('settings'); closeSidebarMobile(); renderSidebar(); };
+$('btnSettingsBack').onclick = () => { showView('list'); renderSidebar(); };
+$('btnStudyBack').onclick = () => { showView('list'); renderLessonList(); renderSidebar(); };
+$('btnNavNew').onclick = () => { showView('list'); renderLessonList(); renderSidebar(); closeSidebarMobile(); };
+$('btnMenu').onclick = () => $('sidebar').classList.toggle('open');
+function closeSidebarMobile(){ $('sidebar').classList.remove('open'); }
+
+// ---------- 복습문장모음 ----------
+function getReview(){ return LS.get('fs_review', []); }
+function saveReviewList(list){ LS.set('fs_review', list); }
+
+let seqActive = false, seqAudio = null;
+function stopReviewPlayback(){
+  seqActive = false;
+  if(seqAudio){ try{ seqAudio.pause(); }catch(e){} seqAudio = null; }
+  highlightReview(null);
+}
+function highlightReview(rkey){
+  document.querySelectorAll('.rev-item').forEach(el => el.classList.toggle('playing', el.dataset.rkey === rkey));
+}
+async function getReviewBlob(r){
+  let blob = await ttsCacheGet(r.ttsKey);
+  if(!blob){
+    blob = await fetchGeminiTts(r.english, r.voice || 'Kore', r.mode || 'natural');
+    await ttsCachePut(r.ttsKey, blob);
+  }
+  return blob;
+}
+function playBlobAsync(blob){
+  return new Promise(res => {
+    const u = URL.createObjectURL(blob);
+    const done = () => { URL.revokeObjectURL(u); res(); };
+    const a = new Audio(u);
+    seqAudio = a;
+    a.onended = done; a.onerror = done;
+    a.play().catch(done);
+  });
+}
+function openReview(){
+  showView('review');
+  renderReviewList();
+  renderSidebar();
+  closeSidebarMobile();
+}
+function renderReviewList(){
+  const list = getReview();
+  const box = $('reviewListBox');
+  box.innerHTML = '';
+  $('reviewEmpty').style.display = list.length ? 'none' : 'block';
+  $('reviewCounter').textContent = list.length ? list.length + '문장' : '';
+  list.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'rev-item';
+    div.dataset.rkey = r.rkey;
+    div.innerHTML = `
+      <div class="rev-main">
+        <div class="rev-eng">${escapeHtml(r.english)}</div>
+        <div class="rev-kor">${escapeHtml(r.korean || '')}</div>
+        <div class="rev-src">${escapeHtml(r.lessonTitle || '')}</div>
+      </div>
+      <div class="rev-btns">
+        <button class="small primary btn-play">▶</button>
+        <button class="small ghost btn-goto" title="원본 문장으로 이동">↗</button>
+        <button class="small ghost btn-del" title="삭제">🗑</button>
+      </div>`;
+    div.querySelector('.btn-play').onclick = async () => {
+      stopReviewPlayback(); stopTts();
+      highlightReview(r.rkey);
+      try{ await playBlobAsync(await getReviewBlob(r)); }
+      catch(e){ alert('재생 실패: ' + e.message); }
+      highlightReview(null);
+    };
+    div.querySelector('.btn-goto').onclick = () => {
+      if(!getLesson(r.lessonId)){ alert('원본 교재가 삭제되어 이동할 수 없습니다.'); return; }
+      openStudy(r.lessonId);
+      curIdx = Math.min(r.sentIdx, curLesson.sentences.length - 1);
+      renderSentence();
+    };
+    div.querySelector('.btn-del').onclick = () => {
+      saveReviewList(getReview().filter(x => x.rkey !== r.rkey));
+      renderReviewList(); renderSidebar();
+      if(curLesson) updateReviewBtn();
+    };
+    box.appendChild(div);
+  });
+}
+$('navReview').onclick = openReview;
+$('btnReviewBack').onclick = () => { showView('list'); renderLessonList(); renderSidebar(); };
+$('btnPlayAll').onclick = async () => {
+  stopReviewPlayback(); stopTts();
+  seqActive = true;
+  for(const r of getReview()){
+    if(!seqActive) break;
+    highlightReview(r.rkey);
+    try{
+      const blob = await getReviewBlob(r);
+      if(!seqActive) break;
+      await playBlobAsync(blob);
+    }catch(e){ console.warn('복습 재생 실패', e); }
+    if(seqActive) await new Promise(rs => setTimeout(rs, 700));
+  }
+  stopReviewPlayback();
+};
+$('btnStopAll').onclick = stopReviewPlayback;
+
+function updateReviewBtn(){
+  const rkey = curLesson.id + '_' + curIdx;
+  const saved = getReview().some(r => r.rkey === rkey);
+  const b = $('btnReview');
+  b.textContent = saved ? '⭐ 복습에 저장됨' : '☆ 복습에 저장';
+  b.classList.toggle('saved', saved);
+}
+$('btnReview').onclick = async () => {
+  const s = curSent();
+  const rkey = curLesson.id + '_' + curIdx;
+  const list = getReview();
+  if(list.some(r => r.rkey === rkey)){   // 다시 누르면 해제
+    saveReviewList(list.filter(r => r.rkey !== rkey));
+    updateReviewBtn(); renderSidebar();
+    return;
+  }
+  const voice = $('selVoice').value, mode = $('selTtsMode').value;
+  const ttsKey = LS.get('fs_ttsModel', DEFAULT_TTS_MODEL) + '|' + voice + '|' + mode + '|' + s.english;
+  const b = $('btnReview');
+  try{
+    let blob = await ttsCacheGet(ttsKey);
+    if(!blob){
+      b.disabled = true; b.textContent = '⭐ AI 음성 준비 중...';
+      blob = await fetchGeminiTts(s.english, voice, mode);
+      await ttsCachePut(ttsKey, blob);
+    }
+    list.push({
+      rkey, lessonId: curLesson.id, sentIdx: curIdx,
+      english: s.english, korean: s.korean, lessonTitle: curLesson.title,
+      voice, mode, ttsKey, addedAt: Date.now()
+    });
+    saveReviewList(list);
+  }catch(e){
+    alert('복습 저장 실패: ' + e.message);
+  }finally{
+    b.disabled = false;
+    updateReviewBtn(); renderSidebar();
+  }
+};
+
+// ---------- 사이드바 ----------
+function renderSidebar(){
+  $('navReview').classList.toggle('active', $('view-review').classList.contains('active'));
+  const rc = getReview().length;
+  $('navReviewCount').textContent = rc ? rc + '문장' : '';
+  const box = $('navLessons');
+  box.innerHTML = '';
+  const list = getLessons();
+  if(!list.length){
+    box.innerHTML = '<div class="nav-empty">아직 교재가 없습니다</div>';
+    return;
+  }
+  const activeId = document.getElementById('view-study').classList.contains('active') && curLesson ? curLesson.id : null;
+  list.forEach(l => {
+    const div = document.createElement('div');
+    div.className = 'nav-item' + (l.id === activeId ? ' active' : '');
+    const prog = getProgress(l.id);
+    const navThumb = l.videoId
+      ? `<img class="nav-thumb" src="https://i.ytimg.com/vi/${l.videoId}/mqdefault.jpg" alt="">`
+      : `<div class="nav-thumb txt">📝</div>`;
+    div.innerHTML = `
+      ${navThumb}
+      <div class="nav-meta">
+        <div class="nav-title">${escapeHtml(l.title)}</div>
+        <div class="nav-sub">${Math.min((prog.idx||0)+1, l.count)}/${l.count}문장</div>
+      </div>`;
+    div.onclick = () => { openStudy(l.id); closeSidebarMobile(); };
+    box.appendChild(div);
+  });
+}
+
+// ---------- 설정 ----------
+const DEFAULT_MODELS = ['gemini-3.6-flash', 'gemini-3.6-pro'];
+// 구버전 모델명이 저장되어 있으면 최신 기본값으로 교체
+(function migrateModel(){
+  const m = LS.get('fs_model', '');
+  if(/gemini-2\.5|gemini-2\.0|gemini-1\./.test(m)) LS.set('fs_model', DEFAULT_MODELS[0]);
+  const list = LS.get('fs_modelList', null);
+  if(list && list.every(n => /gemini-2\.5|gemini-2\.0|gemini-1\./.test(n))) LS.del('fs_modelList');
+})();
+const DEFAULT_TTS_MODEL = 'gemini-3.1-flash-tts-preview';
+function loadSettingsUI(){
+  $('inpApiKey').value = LS.get('fs_apiKey', '');
+  const saved = LS.get('fs_model', DEFAULT_MODELS[0]);
+  fillModelSelect(LS.get('fs_modelList', DEFAULT_MODELS), saved);
+  $('inpTtsModel').value = LS.get('fs_ttsModel', DEFAULT_TTS_MODEL);
+  $('selPadStart').value = String(LS.get('fs_padStart', 0.5));
+  $('selPadEnd').value = String(LS.get('fs_padEnd', 0.7));
+}
+function fillModelSelect(models, selected){
+  const sel = $('selModel');
+  sel.innerHTML = '';
+  const list = [...new Set([...(models||[]), selected])].filter(Boolean);
+  list.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    if(m === selected) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+$('btnToggleKey').onclick = () => {
+  const i = $('inpApiKey');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  $('btnToggleKey').textContent = i.type === 'password' ? '보기' : '숨기기';
+};
+$('btnSaveSettings').onclick = () => {
+  LS.set('fs_apiKey', $('inpApiKey').value.trim());
+  LS.set('fs_model', $('selModel').value);
+  LS.set('fs_ttsModel', $('inpTtsModel').value.trim() || DEFAULT_TTS_MODEL);
+  LS.set('fs_padStart', parseFloat($('selPadStart').value));
+  LS.set('fs_padEnd', parseFloat($('selPadEnd').value));
+  $('saveMsg').textContent = '저장되었습니다 ✓';
+  setTimeout(()=> $('saveMsg').textContent = '', 2500);
+};
+$('btnLoadModels').onclick = async () => {
+  const key = $('inpApiKey').value.trim();
+  if(!key){ alert('먼저 API 키를 입력하세요.'); return; }
+  $('btnLoadModels').disabled = true;
+  try{
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(key));
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    const models = (data.models || [])
+      .filter(m => (m.supportedGenerationMethods||[]).includes('generateContent'))
+      .map(m => m.name.replace('models/',''))
+      .filter(n => !/embedding|aqa|imagen|veo|image|tts|live|audio|transcribe/i.test(n));
+    if(models.length){
+      LS.set('fs_modelList', models);
+      fillModelSelect(models, $('selModel').value);
+      $('saveMsg').textContent = models.length + '개 모델을 불러왔습니다';
+      setTimeout(()=> $('saveMsg').textContent = '', 3000);
+    }
+  }catch(e){
+    alert('모델 목록을 가져오지 못했습니다: ' + e.message + '\nAPI 키를 확인해 주세요.');
+  }finally{
+    $('btnLoadModels').disabled = false;
+  }
+};
+
+// ---------- 교재 데이터 ----------
+function getLessons(){ return LS.get('fs_lessons', []); }
+function saveLessonIndex(list){ LS.set('fs_lessons', list); }
+function getLesson(id){ return LS.get('fs_lesson_' + id, null); }
+function saveLesson(lesson){
+  LS.set('fs_lesson_' + lesson.id, lesson);
+  const list = getLessons().filter(l => l.id !== lesson.id);
+  list.unshift({ id: lesson.id, title: lesson.title, videoId: lesson.videoId, createdAt: lesson.createdAt, count: lesson.sentences.length });
+  saveLessonIndex(list);
+}
+function deleteLesson(id){
+  LS.del('fs_lesson_' + id);
+  LS.del('fs_progress_' + id);
+  saveLessonIndex(getLessons().filter(l => l.id !== id));
+  deleteRecordingsByLesson(id);
+}
+function getProgress(id){ return LS.get('fs_progress_' + id, { idx: 0 }); }
+function saveProgress(id, p){ LS.set('fs_progress_' + id, p); }
+
+function renderLessonList(){
+  const list = getLessons();
+  const box = $('lessonList');
+  box.innerHTML = '';
+  $('emptyHint').style.display = list.length ? 'none' : 'block';
+  list.forEach(l => {
+    const div = document.createElement('div');
+    div.className = 'lesson-item';
+    const prog = getProgress(l.id);
+    const thumb = l.videoId
+      ? `<img class="lesson-thumb" src="https://i.ytimg.com/vi/${l.videoId}/mqdefault.jpg" alt="">`
+      : `<div class="lesson-thumb txt">📝</div>`;
+    div.innerHTML = `
+      ${thumb}
+      <div class="lesson-meta">
+        <div class="lesson-title">${escapeHtml(l.title)}</div>
+        <div class="lesson-sub">${l.count}문장 · 진도 ${Math.min(prog.idx+1, l.count)}/${l.count}</div>
+      </div>
+      <button class="ghost small btn-del" title="삭제">🗑</button>`;
+    div.querySelector('.btn-del').onclick = (e) => {
+      e.stopPropagation();
+      if(confirm('이 교재를 삭제할까요? (녹음도 함께 삭제됩니다)')) { deleteLesson(l.id); renderLessonList(); renderSidebar(); }
+    };
+    div.onclick = () => openStudy(l.id);
+    box.appendChild(div);
+  });
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ---------- YouTube URL 파싱 ----------
+function extractVideoId(url){
+  const m = String(url).match(/(?:youtube\.com\/(?:watch\?.*v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+// ---------- Gemini 분석 ----------
+const ANALYZE_PROMPT = `You are creating study material for a Korean learner of FRENCH from this YouTube video.
+
+Watch/listen to the video and produce the transcript split into natural spoken sentences.
+For EVERY sentence in the video, provide:
+- start / end: timestamps as strings in "M:SS" or "MM:SS" format (e.g. "2:15"), matching when the sentence is actually spoken
+- english: the exact FRENCH sentence as spoken (the field is named "english" for legacy reasons, but it must contain the French text)
+- korean: natural Korean translation (자연스러운 한국어)
+- vocabulary: 0-4 key words/phrases with concise Korean meanings (only genuinely useful ones)
+- expression: one key grammar pattern or expression used, explained briefly in Korean (empty string if none)
+- pronunciation: one French pronunciation tip in Korean — liaison(리에종), enchaînement, 비음, 묵음 등 (empty string if none)
+
+Cover the whole video in order. Do not skip sentences. Also provide a short title for the lesson.
+
+TIMING RULES (critical):
+- Timestamps must be aligned to the AUDIO — the exact moment the words are actually spoken.
+- start = when the first word of the sentence begins to be heard. end = when the last word finishes.
+- Use the "M:SS" format (e.g. "0:12", "2:15"). Never estimate timing from reading speed or text length.
+- Intro music, title cards, or silence must NOT be counted as part of the first sentence.
+- Consecutive sentences should connect: the next sentence's start should be at or right after the previous sentence's end.
+- Timestamps must NEVER exceed the actual duration of the video. Before answering, verify that the last sentence's end time is within the video's real length.`;
+
+const RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    title: { type: "STRING" },
+    sentences: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          start: { type: "STRING", description: "Timestamp. Video mode: M:SS format. Transcript mode: copy the given seconds number exactly, as a string." },
+          end: { type: "STRING", description: "Same format as start." },
+          english: { type: "STRING" },
+          korean: { type: "STRING" },
+          vocabulary: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: { phrase: { type: "STRING" }, meaning: { type: "STRING" } },
+              required: ["phrase", "meaning"]
+            }
+          },
+          expression: { type: "STRING" },
+          pronunciation: { type: "STRING" }
+        },
+        required: ["start", "end", "english", "korean"]
+      }
+    }
+  },
+  required: ["title", "sentences"]
+};
+
+// 자막(transcript) 기반 분석 — 타임스탬프는 자막 것을 그대로 복사, AI는 번역/설명만
+function transcriptPrompt(chunksJson){
+  return `You are creating study material for a Korean learner of FRENCH.
+Below is the OFFICIAL transcript of a YouTube video as JSON chunks, each with ACCURATE start/end times in seconds:
+
+${chunksJson}
+
+Combine the chunks into natural spoken sentences (a sentence usually spans multiple chunks).
+For each sentence provide:
+- start: the "start" value of the chunk where the sentence begins — COPY the number exactly as given, never invent or estimate
+- end: the "end" value of the chunk where the sentence ends — COPY exactly
+- english: the FRENCH sentence text (fix casing/punctuation; keep the words as spoken — the field is named "english" for legacy reasons)
+- korean: natural Korean translation (자연스러운 한국어)
+- vocabulary: 0-4 key words/phrases with concise Korean meanings
+- expression: one key grammar pattern or expression explained briefly in Korean (empty string if none)
+- pronunciation: one French pronunciation tip in Korean — liaison(리에종), enchaînement, 비음, 묵음 등 (empty string if none)
+Cover the whole transcript in order. Do not skip any chunk. Also provide a short title for the lesson.`;
+}
+
+// YouTube "스크립트 표시" 복사 텍스트 또는 SRT/VTT를 [{start,end,text}]로 파싱
+function parseTranscriptText(raw){
+  const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const chunks = [];
+  if(raw.includes('-->')){ // SRT / VTT
+    const tsToSec = t => t.replace(',', '.').split(':').map(parseFloat).reduce((a, b) => a * 60 + b, 0);
+    const re = /([\d:.,]+)\s*-->\s*([\d:.,]+)/;
+    let cur = null;
+    for(const line of lines){
+      const m = line.match(re);
+      if(m){ cur = { start: tsToSec(m[1]), end: tsToSec(m[2]), text: '' }; chunks.push(cur); }
+      else if(cur && !/^\d+$/.test(line) && !/^WEBVTT/i.test(line)) cur.text += (cur.text ? ' ' : '') + line;
+    }
+  }else{ // YouTube 스크립트 패널 형식: "0:00" 줄 + 텍스트 줄
+    const tsRe = /^(\d{1,2}:)?\d{1,2}:\d{2}$/;
+    let cur = null;
+    for(const line of lines){
+      if(tsRe.test(line)){
+        cur = { start: line.split(':').map(Number).reduce((a, b) => a * 60 + b, 0), end: null, text: '' };
+        chunks.push(cur);
+      }else if(cur){
+        cur.text += (cur.text ? ' ' : '') + line;
+      }
+    }
+    chunks.forEach((c, i) => { c.end = chunks[i + 1] ? chunks[i + 1].start : c.start + 5; });
+  }
+  return chunks.filter(c => c.text);
+}
+
+// "M:SS" / "MM:SS.s" / "12.4" / 숫자 → 초
+function parseTs(v){
+  if(typeof v === 'number') return v;
+  if(v == null) return 0;
+  const parts = String(v).trim().split(':').map(parseFloat);
+  if(parts.some(isNaN)) return parseFloat(v) || 0;
+  return parts.reduce((a, b) => a * 60 + b, 0);
+}
+
+$('btnSrtFile').onclick = () => $('fileSrt').click();
+$('fileSrt').onchange = async (e) => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const text = await f.text();
+  $('inpTranscript').value = text;
+  const n = parseTranscriptText(text).length;
+  if(n < 2) alert('이 파일에서 자막을 인식하지 못했습니다. SRT/VTT 형식인지 확인해 주세요.');
+  else $('inpTranscript').closest('details').open = true;
+  e.target.value = '';
+};
+
+function setAnalyzeStatus(html){
+  const el = $('analyzeStatus');
+  el.classList.toggle('on', !!html);
+  el.innerHTML = html || '';
+}
+
+$('btnAnalyze').onclick = async () => {
+  const url = $('inpUrl').value.trim();
+  const videoId = extractVideoId(url);
+  if(!videoId){ alert('올바른 YouTube 주소가 아닙니다.'); return; }
+  const key = LS.get('fs_apiKey', '');
+  if(!key){ alert('먼저 설정에서 Gemini API 키를 입력해 주세요.'); showView('settings'); return; }
+  const model = LS.get('fs_model', DEFAULT_MODELS[0]);
+
+  const transcriptRaw = $('inpTranscript').value.trim();
+  let transcriptChunks = null;
+  if(transcriptRaw){
+    transcriptChunks = parseTranscriptText(transcriptRaw);
+    if(transcriptChunks.length < 2){
+      alert('붙여넣은 자막을 인식하지 못했습니다.\nYouTube의 "스크립트 표시"에서 타임스탬프가 포함된 전체 텍스트를 복사해 주세요.');
+      return;
+    }
+  }
+
+  $('btnAnalyze').disabled = true;
+  setAnalyzeStatus(transcriptChunks
+    ? '<span class="spinner"></span>자막 ' + transcriptChunks.length + '조각을 문장으로 정리하고 있습니다... (타임스탬프는 자막 그대로 사용)'
+    : '<span class="spinner"></span>Gemini가 영상을 분석하고 있습니다... (영상 길이에 따라 1~3분 걸릴 수 있어요)');
+  try{
+    const parts = transcriptChunks
+      ? [{ text: transcriptPrompt(JSON.stringify(transcriptChunks)) }]
+      : [
+          { fileData: { fileUri: 'https://www.youtube.com/watch?v=' + videoId } },
+          { text: ANALYZE_PROMPT }
+        ];
+    const body = {
+      contents: [{ parts }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: RESPONSE_SCHEMA,
+        maxOutputTokens: 65536
+      }
+    };
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    if(!r.ok){
+      const msg = data.error && data.error.message ? data.error.message : ('HTTP ' + r.status);
+      throw new Error(msg);
+    }
+    const cand = data.candidates && data.candidates[0];
+    const text = cand && cand.content && cand.content.parts && cand.content.parts.map(p=>p.text||'').join('');
+    if(!text) throw new Error('모델 응답이 비어 있습니다. (finishReason: ' + (cand && cand.finishReason) + ')');
+    const parsed = JSON.parse(text);
+    if(!parsed.sentences || !parsed.sentences.length) throw new Error('문장을 추출하지 못했습니다.');
+
+    const lesson = {
+      id: videoId + '_' + Date.now().toString(36),
+      videoId,
+      title: parsed.title || url,
+      createdAt: new Date().toISOString(),
+      normalized: true,
+      fromTranscript: !!transcriptChunks,
+      sentences: parsed.sentences.map((s, i) => ({ id: i + 1, ...s, start: parseTs(s.start), end: parseTs(s.end) }))
+    };
+    normalizeSentences(lesson);
+    saveLesson(lesson);
+    setAnalyzeStatus('');
+    $('inpUrl').value = '';
+    $('inpTranscript').value = '';
+    openStudy(lesson.id);
+  }catch(e){
+    console.error(e);
+    setAnalyzeStatus('⚠️ 분석 실패: ' + escapeHtml(e.message));
+  }finally{
+    $('btnAnalyze').disabled = false;
+  }
+};
+
+// ---------- 입력 소스 탭 전환 ----------
+function selectSrcTab(which){
+  const isVideo = which === 'video';
+  $('tabVideo').classList.toggle('active', isVideo);
+  $('tabText').classList.toggle('active', !isVideo);
+  $('srcVideo').style.display = isVideo ? 'block' : 'none';
+  $('srcText').style.display = isVideo ? 'none' : 'block';
+}
+$('tabVideo').onclick = () => selectSrcTab('video');
+$('tabText').onclick = () => selectSrcTab('text');
+
+// ---------- 스크립트(텍스트) 분석 ----------
+const TEXT_RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    title: { type: "STRING" },
+    sentences: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          english: { type: "STRING", description: "The French sentence (field named 'english' for legacy reasons)." },
+          korean: { type: "STRING" },
+          vocabulary: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: { phrase: { type: "STRING" }, meaning: { type: "STRING" } },
+              required: ["phrase", "meaning"]
+            }
+          },
+          expression: { type: "STRING" },
+          pronunciation: { type: "STRING" }
+        },
+        required: ["english", "korean"]
+      }
+    }
+  },
+  required: ["title", "sentences"]
+};
+
+function textAnalyzePrompt(text){
+  return `You are creating study material for a Korean learner of FRENCH.
+Below is a French text/script the learner wants to study:
+
+${text}
+
+Split it into natural sentences, keeping the original order and wording.
+For EVERY sentence provide:
+- english: the French sentence exactly as written (the field is named "english" for legacy reasons, but it must contain the French text)
+- korean: natural Korean translation (자연스러운 한국어)
+- vocabulary: 0-4 key words/phrases with concise Korean meanings (only genuinely useful ones)
+- expression: one key grammar pattern or expression explained briefly in Korean (empty string if none)
+- pronunciation: one French pronunciation tip in Korean — liaison(리에종), enchaînement, 비음, 묵음 등 (empty string if none)
+Cover the whole text. Do not skip sentences. Also provide a short title for the lesson.`;
+}
+
+$('btnAnalyzeText').onclick = async () => {
+  const text = $('inpFrText').value.trim();
+  if(!text){ alert('프랑스어 스크립트를 붙여넣어 주세요.'); return; }
+  const key = LS.get('fs_apiKey', '');
+  if(!key){ alert('먼저 설정에서 Gemini API 키를 입력해 주세요.'); showView('settings'); return; }
+  const model = LS.get('fs_model', DEFAULT_MODELS[0]);
+  $('btnAnalyzeText').disabled = true;
+  setAnalyzeStatus('<span class="spinner"></span>Gemini가 스크립트를 문장별 교재로 만들고 있습니다...');
+  try{
+    const body = {
+      contents: [{ parts: [{ text: textAnalyzePrompt(text) }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: TEXT_RESPONSE_SCHEMA,
+        maxOutputTokens: 65536
+      }
+    };
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    if(!r.ok){
+      const msg = data.error && data.error.message ? data.error.message : ('HTTP ' + r.status);
+      throw new Error(msg);
+    }
+    const cand = data.candidates && data.candidates[0];
+    const respText = cand && cand.content && cand.content.parts && cand.content.parts.map(p=>p.text||'').join('');
+    if(!respText) throw new Error('모델 응답이 비어 있습니다. (finishReason: ' + (cand && cand.finishReason) + ')');
+    const parsed = JSON.parse(respText);
+    if(!parsed.sentences || !parsed.sentences.length) throw new Error('문장을 추출하지 못했습니다.');
+
+    const lesson = {
+      id: 'txt_' + Date.now().toString(36),
+      videoId: null,
+      isText: true,
+      title: $('inpTextTitle').value.trim() || parsed.title || '프랑스어 스크립트',
+      createdAt: new Date().toISOString(),
+      normalized: true,
+      sentences: parsed.sentences.map((sn, i) => ({ id: i + 1, start: 0, end: 0, ...sn }))
+    };
+    saveLesson(lesson);
+    setAnalyzeStatus('');
+    $('inpFrText').value = '';
+    $('inpTextTitle').value = '';
+    openStudy(lesson.id);
+  }catch(e){
+    console.error(e);
+    setAnalyzeStatus('⚠️ 분석 실패: ' + escapeHtml(e.message));
+  }finally{
+    $('btnAnalyzeText').disabled = false;
+  }
+};
+
+// ---------- 샘플 교재 ----------
+$('btnSample').onclick = (e) => {
+  e.preventDefault();
+  const lesson = {
+    id: 'sample_fr',
+    videoId: 'UF8uR6Z6KLc',
+    title: '[샘플] 프랑스어 기초 문장 (화면 구경용 — 영상·타임스탬프와 무관합니다)',
+    createdAt: new Date().toISOString(),
+    sentences: [
+      { id:1, start:52, end:63, english:"Bonjour ! Je suis ravie de vous rencontrer aujourd'hui.",
+        korean:"안녕하세요! 오늘 여러분을 만나게 되어 기쁩니다.",
+        vocabulary:[{phrase:"être ravi(e) de",meaning:"~하게 되어 기쁘다"},{phrase:"rencontrer",meaning:"만나다"}],
+        expression:"être ravi(e) de + 동사원형 — 격식 있는 기쁨 표현 (여성은 ravie)", pronunciation:"ravie의 r는 목젖을 울리는 프랑스어 R — '하비'에 가깝게" },
+      { id:2, start:63, end:68, english:"Je m'appelle Marie et j'habite à Paris.",
+        korean:"제 이름은 마리이고, 파리에 살고 있습니다.",
+        vocabulary:[{phrase:"s'appeler",meaning:"이름이 ~이다"},{phrase:"habiter à",meaning:"~에 살다"}],
+        expression:"Je m'appelle ~ — 자기소개의 기본 패턴", pronunciation:"j'habite의 h는 묵음 — '자비트'처럼 연결해서 발음" },
+      { id:3, start:68, end:74, english:"J'apprends le français depuis six mois.",
+        korean:"저는 6개월 전부터 프랑스어를 배우고 있습니다.",
+        vocabulary:[{phrase:"apprendre",meaning:"배우다"},{phrase:"depuis",meaning:"~이래로, ~전부터"}],
+        expression:"depuis + 기간 — 현재까지 계속되는 일은 현재형으로 표현", pronunciation:"six mois에서 six의 x는 /si/로 — 자음 앞에서 묵음" },
+      { id:4, start:74, end:80, english:"Aujourd'hui, je vais vous raconter trois histoires.",
+        korean:"오늘 저는 여러분께 세 가지 이야기를 들려드리려 합니다.",
+        vocabulary:[{phrase:"raconter",meaning:"이야기하다, 들려주다"}],
+        expression:"aller + 동사원형 — 가까운 미래(~할 것이다)", pronunciation:"trois histoires는 리에종 — '트후아 지스투아흐'" },
+      { id:5, start:80, end:86, english:"C'est tout. Rien de spécial. Juste trois histoires.",
+        korean:"그게 전부입니다. 특별한 건 없어요. 그저 세 가지 이야기일 뿐입니다.",
+        vocabulary:[{phrase:"rien de spécial",meaning:"특별한 것 없음"}],
+        expression:"C'est tout — '그게 다예요'라는 마무리 표현", pronunciation:"짧은 문장 3개의 리듬을 살려 끊어 읽기" }
+    ]
+  };
+  saveLesson(lesson);
+  openStudy(lesson.id);
+};
+
+// ---------- 타임스탬프 보정 ----------
+// 문장 정렬 + 잘못된 값 정리 + 문장 사이 2초 미만의 틈은 앞 문장 끝을 늘려서 메움
+// (Gemini가 문장 끝을 짧게 추정해 마지막 단어가 잘리는 문제 완화)
+function normalizeSentences(lesson){
+  const arr = lesson.sentences;
+  arr.sort((a, b) => (a.start || 0) - (b.start || 0));
+  arr.forEach((s, i) => {
+    s.start = Math.max(0, +s.start || 0);
+    s.end = +s.end || 0;
+    if(s.end <= s.start) s.end = s.start + 2;
+    const next = arr[i + 1];
+    if(next){
+      const nextStart = Math.max(0, +next.start || 0);
+      const gap = nextStart - s.end;
+      if(gap > 0 && gap < 2) s.end = nextStart;      // 작은 틈은 메움
+      if(s.end > nextStart && nextStart > s.start) s.end = nextStart; // 겹침은 잘라냄
+    }
+  });
+}
+
+// ---------- 학습 화면 ----------
+let curLesson = null, curIdx = 0;
+let player = null, playerReady = false, segTimer = null, repeatLeft = 0;
+
+function openStudy(id){
+  const lesson = getLesson(id);
+  if(!lesson){ alert('교재를 찾을 수 없습니다.'); return; }
+  const isText = !lesson.videoId;
+  if(!lesson.normalized && !isText){   // 기존 교재도 1회 자동 보정
+    normalizeSentences(lesson);
+    lesson.normalized = true;
+    saveLesson(lesson);
+  }
+  curLesson = lesson;
+  curIdx = Math.min(getProgress(id).idx || 0, lesson.sentences.length - 1);
+  $('studyTitle').textContent = lesson.title;
+  document.body.classList.toggle('text-lesson', isText);
+  showView('study');
+  if(!isText){
+    setupPlayer(lesson.videoId);
+    scheduleTimelineCheck();
+  }
+  renderScriptList();
+  renderSentence();
+  renderSidebar();
+}
+
+function setupPlayer(videoId){
+  if(player && playerReady){
+    player.cueVideoById(videoId);
+    return;
+  }
+  if(window.YT && window.YT.Player){
+    createPlayer(videoId);
+  }else{
+    window._pendingVideoId = videoId;
+  }
+}
+function createPlayer(videoId){
+  player = new YT.Player('ytplayer', {
+    videoId,
+    playerVars: { rel: 0, playsinline: 1 },
+    events: {
+      onReady: () => { playerReady = true; }
+    }
+  });
+}
+// IFrame API 콜백
+window.onYouTubeIframeAPIReady = function(){
+  if(window._pendingVideoId) createPlayer(window._pendingVideoId);
+};
+
+function curSent(){ return curLesson.sentences[curIdx]; }
+
+// ---------- 전체 스크립트 스크롤 뷰 ----------
+function fmtTimeShort(t){
+  t = Math.max(0, Math.floor(t));
+  return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
+}
+function renderScriptList(){
+  const box = $('scriptScroll');
+  box.innerHTML = '';
+  curLesson.sentences.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'script-line';
+    div.dataset.idx = i;
+    div.innerHTML = `<span class="t">${fmtTimeShort(s.start)}</span><span>${escapeHtml(s.english)}</span>`;
+    div.onclick = () => { curIdx = i; renderSentence(); };
+    box.appendChild(div);
+  });
+}
+function updateScriptHighlight(){
+  const box = $('scriptScroll');
+  box.querySelectorAll('.script-line').forEach(el => el.classList.toggle('cur', +el.dataset.idx === curIdx));
+  const cur = box.querySelector('.script-line.cur');
+  if(cur){
+    // 컨테이너 내부에서만 가운데로 (즉시 이동 — 항상 정확한 위치 보장)
+    box.scrollTop = Math.max(0, cur.offsetTop - box.clientHeight / 2 + cur.offsetHeight / 2);
+  }
+}
+
+// 타임스탬프가 실제 영상 길이를 넘으면 (Gemini가 타임라인을 늘려 잡은 경우) 비율로 자동 축소
+let timelineCheckTimer = null;
+function scheduleTimelineCheck(){
+  clearInterval(timelineCheckTimer);
+  let tries = 0;
+  timelineCheckTimer = setInterval(() => {
+    tries++;
+    if(tries > 30){ clearInterval(timelineCheckTimer); return; }
+    if(!playerReady || !curLesson) return;
+    const dur = player.getDuration();
+    if(!dur || dur < 3) return;
+    clearInterval(timelineCheckTimer);
+    const lastEnd = Math.max(...curLesson.sentences.map(s => s.end));
+    if(lastEnd > dur + 2){
+      const scale = (dur - 0.3) / lastEnd;
+      curLesson.sentences.forEach(s => {
+        s.start = +(s.start * scale).toFixed(1);
+        s.end = +(s.end * scale).toFixed(1);
+      });
+      saveLesson(curLesson);
+      renderScriptList();
+      renderSentence();
+      alert('이 교재의 타임스탬프가 영상 길이(' + fmtTime(dur) + ')를 벗어나 있어서 자동으로 비율 보정했습니다.\n많이 어긋나면 이 교재를 삭제하고 "자막 붙여넣기" 방식으로 다시 만들어 보세요.');
+    }
+  }, 500);
+}
+
+function renderSentence(){
+  const s = curSent();
+  $('studyCounter').textContent = (curIdx + 1) + ' / ' + curLesson.sentences.length;
+  updateScriptHighlight();
+  $('sentKorean').textContent = s.korean;
+  const vb = $('sentVocab');
+  vb.innerHTML = '';
+  (s.vocabulary || []).forEach(v => {
+    const c = document.createElement('span');
+    c.className = 'chip';
+    c.innerHTML = '<b>' + escapeHtml(v.phrase) + '</b> ' + escapeHtml(v.meaning);
+    vb.appendChild(c);
+  });
+  const ex = $('sentExpr');
+  ex.style.display = s.expression ? 'block' : 'none';
+  ex.textContent = s.expression ? '💡 ' + s.expression : '';
+  const pr = $('sentPron');
+  pr.style.display = s.pronunciation ? 'block' : 'none';
+  pr.textContent = s.pronunciation ? '🗣 ' + s.pronunciation : '';
+  $('segTime').textContent = fmtTime(s.start) + ' → ' + fmtTime(s.end);
+  updateReviewBtn();
+  if(continuousMode){
+    stopTts();
+    // 이어서 재생 중 사용자가 문장을 클릭하면 그 지점으로 점프 (자동 이동일 땐 그대로)
+    if(!contAuto && playerReady) player.seekTo(Math.max(0, s.start - 0.3), true);
+  }else{
+    stopSegment(); stopTts();
+  }
+  saveProgress(curLesson.id, { idx: curIdx });
+  renderRecList();
+  refreshAiWave();
+  renderSidebar();
+}
+function fmtTime(t){
+  t = Math.max(0, t);
+  const m = Math.floor(t / 60), s = (t % 60).toFixed(1);
+  return m + ':' + String(s).padStart(4, '0');
+}
+$('btnPrev').onclick = () => { if(curIdx > 0){ curIdx--; renderSentence(); } };
+$('btnNext').onclick = () => { if(curIdx < curLesson.sentences.length - 1){ curIdx++; renderSentence(); } };
+
+// ---------- 구간 재생 ----------
+function playSegment(times){
+  if(!playerReady){ alert('플레이어가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.'); return; }
+  const s = curSent();
+  const dur = player.getDuration();
+  if(dur > 3 && s.start >= dur - 0.5){
+    alert('이 문장의 시작 시간(' + fmtTime(s.start) + ')이 영상 길이(' + fmtTime(dur) + ')를 벗어납니다.\n이 교재를 삭제하고 "자막 붙여넣기" 방식으로 다시 만들어 보세요.');
+    return;
+  }
+  cancelContinuous();
+  repeatLeft = (times || 1) - 1;
+  // 구간 여유분(패딩): 타임스탬프 오차와 YouTube 시작 지연을 흡수 — 저장된 시간은 건드리지 않음
+  const padS = parseFloat(LS.get('fs_padStart', 0.5)), padE = parseFloat(LS.get('fs_padEnd', 0.7));
+  const segFrom = Math.max(0, s.start - padS);
+  const segTo = dur > 3 ? Math.min(s.end + padE, dur - 0.1) : s.end + padE;
+  player.setPlaybackRate(parseFloat($('selRate').value));
+  player.seekTo(segFrom, true);
+  player.playVideo();
+  clearInterval(segTimer);
+  segTimer = setInterval(() => {
+    if(!playerReady) return;
+    const t = player.getCurrentTime();
+    if(t >= segTo){
+      if(repeatLeft > 0){
+        repeatLeft--;
+        player.seekTo(segFrom, true);
+      }else{
+        player.pauseVideo();
+        clearInterval(segTimer);
+        segTimer = null;
+      }
+    }
+  }, 100);
+}
+function stopSegment(){
+  clearInterval(segTimer); segTimer = null; repeatLeft = 0;
+  cancelContinuous();
+  if(player && playerReady){ try{ player.pauseVideo(); }catch(e){} }
+}
+
+// ---------- 이어서 재생 (현재 문장부터 계속, 하이라이트 자동 이동) ----------
+let contTimer = null, continuousMode = false, contAuto = false;
+function cancelContinuous(){
+  continuousMode = false;
+  clearInterval(contTimer); contTimer = null;
+  updateContBtn();
+}
+function updateContBtn(){
+  const b = $('btnCont');
+  b.textContent = continuousMode ? '⏹ 멈추기' : '▶ 이어서 재생';
+}
+function startContinuous(){
+  if(!playerReady){ alert('플레이어가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.'); return; }
+  clearInterval(segTimer); segTimer = null; repeatLeft = 0;
+  stopTts();
+  continuousMode = true;
+  updateContBtn();
+  player.setPlaybackRate(parseFloat($('selRate').value));
+  player.seekTo(Math.max(0, curSent().start - 0.3), true);
+  player.playVideo();
+  clearInterval(contTimer);
+  contTimer = setInterval(() => {
+    if(!playerReady || !continuousMode) return;
+    if(player.getPlayerState() === 0){ cancelContinuous(); return; } // 영상 끝
+    const t = player.getCurrentTime();
+    const arr = curLesson.sentences;
+    const j = arr.findIndex((s, i) => t >= s.start && (i === arr.length - 1 || t < arr[i + 1].start));
+    if(j >= 0 && j !== curIdx){
+      curIdx = j;
+      contAuto = true; renderSentence(); contAuto = false;
+    }
+  }, 250);
+}
+$('btnCont').onclick = () => { continuousMode ? stopSegment() : startContinuous(); };
+$('btnPlaySeg').onclick = () => playSegment(1);
+$('btnRepeat3').onclick = () => playSegment(3);
+$('btnRepeatInf').onclick = () => playSegment(Infinity);
+$('btnStopSeg').onclick = stopSegment;
+
+
+// ---------- AI 음성 재생 ----------
+let aiAudio = null, aiLoop = false;
+function stopTts(){
+  aiLoop = false;
+  if(aiAudio){ try{ aiAudio.pause(); }catch(e){} aiAudio = null; }
+  updateAiLoopBtn();
+}
+function updateAiLoopBtn(){
+  const b = $('btnAiLoop');
+  b.textContent = aiLoop ? '⏹ 반복 정지' : '♾ 무한';
+  b.classList.toggle('primary', aiLoop);
+}
+
+// ---------- Gemini AI 음성 ----------
+const TTS_STYLES = {
+  natural: 'Say this in natural, conversational French, as if talking to a friend. Do not sound like a narrator:',
+  slow: 'Read this French sentence slowly and clearly for a learner, but preserve natural liaison and intonation:',
+  expressive: 'Read this French sentence with natural emotion and expressive intonation, like a native French speaker in a real conversation:'
+};
+function pcm16ToWavBlob(base64, sampleRate){
+  const bin = atob(base64);
+  const pcm = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) pcm[i] = bin.charCodeAt(i);
+  const header = new ArrayBuffer(44);
+  const v = new DataView(header);
+  const writeStr = (off, s) => { for(let i = 0; i < s.length; i++) v.setUint8(off + i, s.charCodeAt(i)); };
+  writeStr(0, 'RIFF'); v.setUint32(4, 36 + pcm.length, true); writeStr(8, 'WAVE');
+  writeStr(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  writeStr(36, 'data'); v.setUint32(40, pcm.length, true);
+  return new Blob([header, pcm], { type: 'audio/wav' });
+}
+async function ttsCacheGet(key){
+  try{
+    const d = await openDb();
+    return await txDone(d.transaction('tts').objectStore('tts').get(key));
+  }catch(e){ return null; }
+}
+async function ttsCachePut(key, blob){
+  try{
+    const d = await openDb();
+    await txDone(d.transaction('tts', 'readwrite').objectStore('tts').put(blob, key));
+  }catch(e){}
+}
+async function fetchGeminiTts(text, voice, mode){
+  const key = LS.get('fs_apiKey', '');
+  if(!key) throw new Error('설정에서 API 키를 먼저 입력해 주세요.');
+  const model = LS.get('fs_ttsModel', DEFAULT_TTS_MODEL);
+  const body = {
+    contents: [{ parts: [{ text: TTS_STYLES[mode] + '\n' + text }] }],
+    generationConfig: {
+      responseModalities: ['AUDIO'],
+      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } }
+    }
+  };
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+  });
+  const data = await r.json();
+  if(!r.ok) throw new Error(data.error && data.error.message ? data.error.message : 'HTTP ' + r.status);
+  const part = data.candidates && data.candidates[0] && data.candidates[0].content
+    && data.candidates[0].content.parts && data.candidates[0].content.parts.find(p => p.inlineData);
+  if(!part) throw new Error('음성이 생성되지 않았습니다.');
+  const rateMatch = (part.inlineData.mimeType || '').match(/rate=(\d+)/);
+  return pcm16ToWavBlob(part.inlineData.data, rateMatch ? parseInt(rateMatch[1]) : 24000);
+}
+function ttsKeyForCurrent(){
+  return LS.get('fs_ttsModel', DEFAULT_TTS_MODEL) + '|' + $('selVoice').value + '|' + $('selTtsMode').value + '|' + curSent().english;
+}
+// 캐시에 이미 있는 AI 음성이면 파형을 미리 보여줌
+async function refreshAiWave(){
+  if(!curLesson) return;
+  const blob = await ttsCacheGet(ttsKeyForCurrent());
+  if(blob) renderWave(aiWaveCanvas, blob, AI_WAVE_COLOR);
+  else clearWave(aiWaveCanvas);
+  updateOverlay();
+}
+$('selVoice').onchange = refreshAiWave;
+$('selTtsMode').onchange = refreshAiWave;
+
+async function playAiVoice(loop){
+  stopTts(); stopSegment();
+  const cacheKey = ttsKeyForCurrent();
+  const btn = $('btnAiTts');
+  try{
+    let blob = await ttsCacheGet(cacheKey);
+    if(!blob){
+      btn.disabled = true;
+      btn.textContent = '✨ 생성 중...';
+      blob = await fetchGeminiTts(curSent().english, $('selVoice').value, $('selTtsMode').value);
+      await ttsCachePut(cacheKey, blob);
+    }
+    await renderWave(aiWaveCanvas, blob, AI_WAVE_COLOR);
+    updateOverlay();
+    aiLoop = loop;
+    if(playAiVoice._url) URL.revokeObjectURL(playAiVoice._url);
+    const url = playAiVoice._url = URL.createObjectURL(blob);
+    const startPlay = () => {
+      aiAudio = new Audio(url);
+      aiAudio.onended = () => {
+        // 무한 반복: 따라 말할 틈 0.7초 후 다시 재생
+        if(aiLoop) setTimeout(() => { if(aiLoop) startPlay(); }, 700);
+        else updateAiLoopBtn();
+      };
+      animateCursor(aiWaveCanvas, aiAudio);
+      aiAudio.play();
+    };
+    startPlay();
+    updateAiLoopBtn();
+  }catch(e){
+    aiLoop = false;
+    alert('AI 음성 생성 실패: ' + e.message);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '▶ 듣기';
+  }
+}
+$('btnAiTts').onclick = () => playAiVoice(false);
+$('btnAiLoop').onclick = () => {
+  if(aiLoop){ stopTts(); return; }   // 반복 중이면 정지
+  playAiVoice(true);
+};
+
+// ---------- IndexedDB (녹음) ----------
+let db = null;
+function openDb(){
+  return new Promise((res, rej) => {
+    if(db) return res(db);
+    const req = indexedDB.open('fs_recordings', 2);
+    req.onupgradeneeded = () => {
+      const d = req.result;
+      if(!d.objectStoreNames.contains('recs')){
+        const store = d.createObjectStore('recs', { keyPath: 'key' });
+        store.createIndex('bySent', ['lessonId', 'sentId']);
+        store.createIndex('byLesson', 'lessonId');
+      }
+      if(!d.objectStoreNames.contains('tts')){
+        d.createObjectStore('tts'); // key: model|voice|mode|text → wav Blob
+      }
+    };
+    req.onsuccess = () => { db = req.result; res(db); };
+    req.onerror = () => rej(req.error);
+  });
+}
+async function saveRecording(blob){
+  const d = await openDb();
+  const key = curLesson.id + '_' + curIdx + '_' + Date.now();
+  const rec = { key, lessonId: curLesson.id, sentId: curIdx, blob, createdAt: Date.now() };
+  await txDone(d.transaction('recs', 'readwrite').objectStore('recs').put(rec));
+  // 최근 3개만 유지
+  const all = await getRecordings(curLesson.id, curIdx);
+  const excess = all.slice(0, Math.max(0, all.length - 3));
+  for(const r of excess){
+    await txDone(d.transaction('recs', 'readwrite').objectStore('recs').delete(r.key));
+  }
+}
+function txDone(req){
+  return new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
+}
+async function getRecordings(lessonId, sentId){
+  const d = await openDb();
+  return new Promise((res, rej) => {
+    const out = [];
+    const idx = d.transaction('recs').objectStore('recs').index('bySent');
+    const cur = idx.openCursor(IDBKeyRange.only([lessonId, sentId]));
+    cur.onsuccess = () => {
+      const c = cur.result;
+      if(c){ out.push(c.value); c.continue(); }
+      else res(out.sort((a,b) => a.createdAt - b.createdAt));
+    };
+    cur.onerror = () => rej(cur.error);
+  });
+}
+async function deleteRecordingsByLesson(lessonId){
+  try{
+    const d = await openDb();
+    const idx = d.transaction('recs', 'readwrite').objectStore('recs').index('byLesson');
+    const cur = idx.openCursor(IDBKeyRange.only(lessonId));
+    cur.onsuccess = () => { const c = cur.result; if(c){ c.delete(); c.continue(); } };
+  }catch(e){}
+}
+$('btnClearRecs').onclick = async () => {
+  if(!confirm('모든 녹음을 삭제할까요?')) return;
+  const d = await openDb();
+  await txDone(d.transaction('recs', 'readwrite').objectStore('recs').clear());
+  refreshStorageInfo();
+};
+
+// ---------- 녹음 ----------
+let recorder = null, recChunks = [], audioCtx = null, analyser = null, liveRAF = null, micStream = null;
+const waveCanvas = $('waveCanvas');
+const wctx = waveCanvas.getContext('2d');
+
+$('btnRec').onclick = async () => {
+  if(recorder && recorder.state === 'recording'){ stopRecording(); return; }
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  }catch(e){
+    alert('마이크 권한이 필요합니다: ' + e.message); return;
+  }
+  recChunks = [];
+  recorder = new MediaRecorder(micStream);
+  recorder.ondataavailable = (e) => { if(e.data.size) recChunks.push(e.data); };
+  recorder.onstop = async () => {
+    let blob = new Blob(recChunks, { type: recorder.mimeType || 'audio/webm' });
+    micStream.getTracks().forEach(t => t.stop());
+    cancelAnimationFrame(liveRAF);
+    try{ if(liveSrc) liveSrc.disconnect(); if(analyser) analyser.disconnect(); }catch(e){}
+    liveSrc = null;
+    vad = null;
+    try{ blob = await trimSilence(blob); }catch(e){ console.warn('트리밍 실패, 원본 저장', e); }
+    await saveRecording(blob);
+    await renderWave(waveCanvas, blob, MY_WAVE_COLOR);
+    renderRecList();
+    updateOverlay();
+    $('btnRec').textContent = '● 녹음 시작';
+    $('btnRec').classList.add('primary');
+    $('recStatus').innerHTML = '저장되었습니다 ✓';
+  };
+  recorder.start();
+  $('btnRec').textContent = '■ 끝내기';
+  $('btnRec').classList.remove('primary');
+  if($('chkAutoRec').checked){
+    vad = { t0: performance.now(), started: false, lastLoud: 0, ambient: [], thr: null };
+    $('recStatus').innerHTML = '🎧 대기 중 — 말씀을 시작하세요';
+  }else{
+    vad = null;
+    $('recStatus').innerHTML = '<span class="rec-dot">●</span> 녹음 중...';
+  }
+  startLiveWave(micStream);
+};
+function stopRecording(){ if(recorder && recorder.state === 'recording') recorder.stop(); }
+
+// 음성 감지(VAD): 말이 시작되면 표시, 1.2초 이상 조용하면 자동 정지
+let vad = null;
+function vadCheck(data){
+  if(!vad) return;
+  let sum = 0;
+  for(let i = 0; i < data.length; i++){ const x = (data[i] - 128) / 128; sum += x * x; }
+  const rms = Math.sqrt(sum / data.length);
+  const now = performance.now();
+  if(now - vad.t0 < 350){ vad.ambient.push(rms); return; }   // 주변 소음 측정
+  if(vad.thr === null){
+    const base = vad.ambient.length ? vad.ambient.reduce((a, b) => a + b, 0) / vad.ambient.length : 0;
+    vad.thr = Math.max(0.02, base * 3);
+  }
+  if(rms > vad.thr){
+    if(!vad.started){
+      vad.started = true;
+      $('recStatus').innerHTML = '<span class="rec-dot">●</span> 녹음 중... (말을 멈추면 자동 저장)';
+    }
+    vad.lastLoud = now;
+  }else if(vad.started && now - vad.lastLoud > 1200){
+    stopRecording();                                          // 문장 끝 → 자동 정지
+  }else if(!vad.started && now - vad.t0 > 12000){
+    stopRecording();                                          // 12초간 무음이면 안전 정지
+  }
+}
+
+let liveSrc = null;
+function startLiveWave(stream){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  liveSrc = audioCtx.createMediaStreamSource(stream);
+  const src = liveSrc;
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 1024;
+  src.connect(analyser);
+  const data = new Uint8Array(analyser.fftSize);
+  const W = waveCanvas.width, H = waveCanvas.height;
+  function draw(){
+    liveRAF = requestAnimationFrame(draw);
+    analyser.getByteTimeDomainData(data);
+    vadCheck(data);
+    wctx.fillStyle = '#3a2a22'; wctx.fillRect(0, 0, W, H);
+    wctx.strokeStyle = '#ff87ae'; wctx.lineWidth = 2;
+    wctx.beginPath();
+    for(let i = 0; i < data.length; i++){
+      const x = i / data.length * W;
+      const y = data[i] / 255 * H;
+      i ? wctx.lineTo(x, y) : wctx.moveTo(x, y);
+    }
+    wctx.stroke();
+  }
+  draw();
+}
+const AI_WAVE_COLOR = '#3ecf9a', MY_WAVE_COLOR = '#ff87ae', WAVE_BG = '#3a2a22';
+const aiWaveCanvas = $('aiWaveCanvas');
+function clearWave(canvas){
+  const c = canvas.getContext('2d');
+  c.fillStyle = WAVE_BG; c.fillRect(0, 0, canvas.width, canvas.height);
+  canvas._snapshot = null; canvas._dur = 0;
+}
+async function renderWave(canvas, blob, color){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await audioCtx.decodeAudioData(await blob.arrayBuffer());
+    const ch = buf.getChannelData(0);
+    const c = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const step = Math.ceil(ch.length / W);
+    c.fillStyle = WAVE_BG; c.fillRect(0, 0, W, H);
+    c.fillStyle = color;
+    for(let x = 0; x < W; x++){
+      let min = 1, max = -1;
+      for(let i = x * step; i < (x + 1) * step && i < ch.length; i++){
+        if(ch[i] < min) min = ch[i];
+        if(ch[i] > max) max = ch[i];
+      }
+      const y1 = (1 - max) / 2 * H, y2 = (1 - min) / 2 * H;
+      c.fillRect(x, y1, 1, Math.max(1, y2 - y1));
+    }
+    canvas._snapshot = c.getImageData(0, 0, W, H);
+    canvas._dur = buf.duration;
+  }catch(e){ console.warn('waveform decode 실패', e); }
+}
+// 재생 중 파형 위에 진행 커서 표시
+function animateCursor(canvas, audio){
+  const c = canvas.getContext('2d');
+  function step(){
+    if(!canvas._snapshot) return;
+    c.putImageData(canvas._snapshot, 0, 0);
+    if(audio.paused || audio.ended) return;
+    const dur = canvas._dur || audio.duration || 1;
+    const x = Math.min(canvas.width - 2, (audio.currentTime / dur) * canvas.width);
+    c.fillStyle = 'rgba(255,255,255,.9)';
+    c.fillRect(x, 0, 2, canvas.height);
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+const drawBlobWave = (blob) => renderWave(waveCanvas, blob, MY_WAVE_COLOR);
+
+// 클리어 없이 겹쳐 그리기 (오버레이용)
+async function drawWaveInto(canvas, blob, color){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await audioCtx.decodeAudioData(await blob.arrayBuffer());
+    const ch = buf.getChannelData(0);
+    const c = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const step = Math.ceil(ch.length / W);
+    c.fillStyle = color;
+    for(let x = 0; x < W; x++){
+      let min = 1, max = -1;
+      for(let i = x * step; i < (x + 1) * step && i < ch.length; i++){
+        if(ch[i] < min) min = ch[i];
+        if(ch[i] > max) max = ch[i];
+      }
+      const y1 = (1 - max) / 2 * H, y2 = (1 - min) / 2 * H;
+      c.fillRect(x, y1, 1, Math.max(1, y2 - y1));
+    }
+  }catch(e){ console.warn('overlay decode 실패', e); }
+}
+// AI 파형 + 내 최근 녹음 파형을 한 캔버스에 오버랩 (각각 전체 폭으로 정규화)
+async function updateOverlay(){
+  const canvas = $('overlayCanvas');
+  clearWave(canvas);
+  if(!curLesson) return;
+  const aiBlob = await ttsCacheGet(ttsKeyForCurrent());
+  const recs = await getRecordings(curLesson.id, curIdx);
+  const myBlob = recs.length ? recs[recs.length - 1].blob : null;
+  if(aiBlob) await drawWaveInto(canvas, aiBlob, 'rgba(62,207,154,0.8)');
+  if(myBlob) await drawWaveInto(canvas, myBlob, 'rgba(255,135,174,0.65)');
+}
+
+// AudioBuffer 일부 구간 → WAV Blob (모노 16bit)
+function encodeWavFromBuffer(buf, startSec, endSec){
+  const sr = buf.sampleRate;
+  const ch = buf.getChannelData(0);
+  const s = Math.max(0, Math.floor(startSec * sr));
+  const e = Math.min(ch.length, Math.ceil(endSec * sr));
+  const n = e - s;
+  const out = new ArrayBuffer(44 + n * 2);
+  const v = new DataView(out);
+  const w = (off, str) => { for(let i = 0; i < str.length; i++) v.setUint8(off + i, str.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE');
+  w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, 'data'); v.setUint32(40, n * 2, true);
+  let o = 44;
+  for(let i = s; i < e; i++){
+    const x = Math.max(-1, Math.min(1, ch[i]));
+    v.setInt16(o, x * 32767, true); o += 2;
+  }
+  return new Blob([out], { type: 'audio/wav' });
+}
+// 녹음 앞뒤 침묵 자동 제거 — 파형 비교 시 시간축이 맞도록
+async function trimSilence(blob){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const buf = await audioCtx.decodeAudioData(await blob.arrayBuffer());
+  const ch = buf.getChannelData(0), sr = buf.sampleRate;
+  let peak = 0;
+  for(let i = 0; i < ch.length; i += 17){ const a = Math.abs(ch[i]); if(a > peak) peak = a; }
+  const thr = Math.max(0.012, peak * 0.09);
+  const win = Math.floor(sr * 0.03);
+  let first = -1, last = -1;
+  for(let i = 0; i < ch.length; i += win){
+    let m = 0;
+    for(let j = i; j < i + win && j < ch.length; j++){ const a = Math.abs(ch[j]); if(a > m) m = a; }
+    if(m > thr){ if(first < 0) first = i; last = i + win; }
+  }
+  if(first < 0) return blob;
+  const s = Math.max(0, first / sr - 0.15), e = Math.min(buf.duration, last / sr + 0.25);
+  if(e - s < 0.25) return blob;
+  return encodeWavFromBuffer(buf, s, e);
+}
+
+async function renderRecList(){
+  const box = $('recList');
+  box.innerHTML = '';
+  if(!curLesson) return;
+  const recs = await getRecordings(curLesson.id, curIdx);
+  recs.slice().reverse().forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'rec-item';
+    const when = new Date(r.createdAt);
+    div.innerHTML = `<button class="small">▶ 재생</button>
+      <span>녹음 ${recs.length - i} · ${when.getMonth()+1}/${when.getDate()} ${String(when.getHours()).padStart(2,'0')}:${String(when.getMinutes()).padStart(2,'0')}</span>
+      <button class="small ghost">파형</button>`;
+    const [btnPlay, btnWave] = div.querySelectorAll('button');
+    btnPlay.onclick = async () => {
+      await renderWave(waveCanvas, r.blob, MY_WAVE_COLOR);
+      const u = URL.createObjectURL(r.blob);
+      const a = new Audio(u);
+      a.onended = a.onerror = () => URL.revokeObjectURL(u);
+      animateCursor(waveCanvas, a);
+      a.play();
+    };
+    btnWave.onclick = () => renderWave(waveCanvas, r.blob, MY_WAVE_COLOR);
+    box.appendChild(div);
+  });
+  if(!recs.length) clearWave(waveCanvas);
+}
+
+// ---------- 백업 ----------
+$('btnExport').onclick = () => {
+  const dump = { exportedAt: new Date().toISOString(), lessons: [], progress: {}, review: getReview() };
+  getLessons().forEach(l => {
+    const full = getLesson(l.id);
+    if(full) dump.lessons.push(full);
+    dump.progress[l.id] = getProgress(l.id);
+  });
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'french-study-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+$('btnImport').onclick = () => $('fileImport').click();
+$('fileImport').onchange = async (e) => {
+  const f = e.target.files[0];
+  if(!f) return;
+  try{
+    const dump = JSON.parse(await f.text());
+    (dump.lessons || []).forEach(l => saveLesson(l));
+    Object.entries(dump.progress || {}).forEach(([id, p]) => saveProgress(id, p));
+    if(dump.review && dump.review.length){
+      const cur = getReview();
+      const keys = new Set(cur.map(r => r.rkey));
+      dump.review.forEach(r => { if(!keys.has(r.rkey)) cur.push(r); });
+      saveReviewList(cur);
+    }
+    alert((dump.lessons || []).length + '개 교재를 가져왔습니다.');
+    renderLessonList();
+    renderSidebar();
+  }catch(err){
+    alert('가져오기 실패: ' + err.message);
+  }
+  e.target.value = '';
+};
+
+// ---------- 저장 공간 ----------
+async function refreshStorageInfo(){
+  let txt = '';
+  try{
+    if(navigator.storage && navigator.storage.estimate){
+      const est = await navigator.storage.estimate();
+      txt = '사용 중: ' + (est.usage / 1024 / 1024).toFixed(1) + ' MB / 할당 가능: ' + (est.quota / 1024 / 1024 / 1024).toFixed(1) + ' GB';
+    }
+  }catch(e){}
+  $('storageInfo').textContent = txt || '저장 공간 정보를 확인할 수 없습니다.';
+}
+
+// ---------- 초기화 ----------
+(function init(){
+  try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+  loadSettingsUI();
+  renderLessonList();
+  renderSidebar();
+  // 재생/음성 관련 설정 기억 (다음 방문에도 유지)
+  ['selRate', 'selVoice', 'selTtsMode'].forEach(id => {
+    const el = $(id);
+    const saved = LS.get('fs_pref_' + id, null);
+    if(saved !== null && [...el.options].some(o => o.value === saved)) el.value = saved;
+    el.addEventListener('change', () => LS.set('fs_pref_' + id, el.value));
+  });
+  // 여유분은 바꾸는 즉시 적용 (저장 버튼 없이)
+  $('selPadStart').addEventListener('change', () => LS.set('fs_padStart', parseFloat($('selPadStart').value)));
+  $('selPadEnd').addEventListener('change', () => LS.set('fs_padEnd', parseFloat($('selPadEnd').value)));
+  $('chkAutoRec').checked = LS.get('fs_pref_autoRec', true);
+  $('chkAutoRec').addEventListener('change', () => LS.set('fs_pref_autoRec', $('chkAutoRec').checked));
+  // 키보드 단축키 (학습 화면): ←/→ 문장 이동, 스페이스 원문 듣기/정지
+  document.addEventListener('keydown', (e) => {
+    if(document.body.dataset.view !== 'study' || !curLesson) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    if(e.key === 'ArrowLeft'){ e.preventDefault(); $('btnPrev').click(); }
+    else if(e.key === 'ArrowRight'){ e.preventDefault(); $('btnNext').click(); }
+    else if(e.key === ' '){
+      e.preventDefault();
+      if(!curLesson.videoId){
+        (aiAudio && !aiAudio.paused) ? stopTts() : playAiVoice(false);
+      }else{
+        (segTimer || continuousMode) ? stopSegment() : playSegment(1);
+      }
+    }
+  });
+  // YouTube IFrame API 로드
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
+</script>
+</body>
+</html>
