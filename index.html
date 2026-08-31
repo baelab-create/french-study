@@ -197,6 +197,7 @@
   .cmp-label.me{color:var(--accent);}
   .rec-list{margin-top:10px; display:flex; flex-direction:column; gap:6px;}
   .rec-item{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--sub);}
+  .rec-item .ghost{border-color:#e5c8bb; color:#8a6a58;}
   .rec-dot{color:var(--red); animation:blink 1s infinite;}
   @keyframes blink{50%{opacity:.2;}}
   .footer-note{font-size:12px; color:#c2a391; text-align:center; margin-top:24px;}
@@ -1800,7 +1801,7 @@ async function renderRecList(){
     const div = document.createElement('div');
     div.className = 'rec-item';
     const when = new Date(r.createdAt);
-    div.innerHTML = `<button class="small">▶ 재생</button>
+    div.innerHTML = `<button class="small primary">▶ 재생</button>
       <span>녹음 ${recs.length - i} · ${when.getMonth()+1}/${when.getDate()} ${String(when.getHours()).padStart(2,'0')}:${String(when.getMinutes()).padStart(2,'0')}</span>
       <button class="small ghost">파형</button>`;
     const [btnPlay, btnWave] = div.querySelectorAll('button');
