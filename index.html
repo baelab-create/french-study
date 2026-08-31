@@ -173,18 +173,25 @@
   @media(max-width:1019px){
     .player-box{position:sticky; top:6px; z-index:30;}
   }
-  .korean{font-size:15px; color:var(--sub); margin-bottom:14px;}
+  .korean{font-size:15.5px; color:#1b1b1b; margin-bottom:14px;}
   .chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;}
   .chip{
-    background:var(--accent-soft); color:var(--accent); font-size:12.5px; font-weight:600;
+    background:var(--accent-soft); color:#1b1b1b; font-size:12.5px; font-weight:600;
     padding:4px 10px; border-radius:99px;
   }
   .chip b{font-weight:800;}
   .note{
-    font-size:13.5px; background:#fdf7e8; border:1px solid #f0e3bd; color:#6b5615;
+    font-size:13.5px; background:#fdf7e8; border:1px solid #f0e3bd; color:#1b1b1b;
     border-radius:10px; padding:8px 12px; margin-bottom:8px;
   }
-  .note.pron{background:#eefaf4; border-color:#c9ecd9; color:#0e6b46;}
+  .note.pron{background:#eefaf4; border-color:#c9ecd9; color:#1b1b1b;}
+  .note.ex{background:#f0f4fd; border-color:#cfdcf3; color:#1b1b1b;}
+  .ex-head{font-weight:800; font-size:13px; margin-bottom:6px;}
+  .ex-line{display:flex; gap:8px; align-items:flex-start; padding:5px 0; border-top:1px dashed #d9e2f2;}
+  .ex-line .ex-play{padding:3px 9px; font-size:11.5px; border-radius:8px; flex-shrink:0; margin-top:1px;}
+  .ex-txt{min-width:0;}
+  .ex-txt .fr{display:block; font-weight:700;}
+  .ex-txt .ko{display:block; font-size:12.5px; color:#4a4a4a; margin-top:1px;}
   .controls{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
   .adjust{display:flex; gap:6px; align-items:center; font-size:12.5px; color:var(--sub); flex-wrap:wrap; margin-top:10px;}
   .timecode{font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--sub);}
@@ -378,6 +385,7 @@
       <div class="chips" id="sentVocab"></div>
       <div class="note" id="sentExpr" style="display:none;"></div>
       <div class="note pron" id="sentPron" style="display:none;"></div>
+      <div class="note ex" id="sentExamples" style="display:none;"></div>
 
       <div class="controls">
         <button class="primary" id="btnPlaySeg">▶ 원문 듣기</button>
@@ -795,6 +803,7 @@ For EVERY sentence in the video, provide:
 - vocabulary: 0-4 key words/phrases with concise Korean meanings (only genuinely useful ones)
 - expression: one key grammar pattern or expression used, explained briefly in Korean (empty string if none)
 - pronunciation: one French pronunciation tip in Korean — liaison(리에종), enchaînement, 비음, 묵음 등 (empty string if none)
+- examples: 1-2 NEW short, simple example sentences (A1-A2 beginner level) that reuse a key word or the main grammar pattern of this sentence — each with "french" and "korean" (natural Korean translation). They must be different from the original sentence and easy for beginners. (empty array if nothing useful)
 
 Cover the whole video in order. Do not skip sentences. Also provide a short title for the lesson.
 
@@ -828,7 +837,15 @@ const RESPONSE_SCHEMA = {
             }
           },
           expression: { type: "STRING" },
-          pronunciation: { type: "STRING" }
+          pronunciation: { type: "STRING" },
+          examples: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: { french: { type: "STRING" }, korean: { type: "STRING" } },
+              required: ["french", "korean"]
+            }
+          }
         },
         required: ["start", "end", "english", "korean"]
       }
@@ -853,6 +870,7 @@ For each sentence provide:
 - vocabulary: 0-4 key words/phrases with concise Korean meanings
 - expression: one key grammar pattern or expression explained briefly in Korean (empty string if none)
 - pronunciation: one French pronunciation tip in Korean — liaison(리에종), enchaînement, 비음, 묵음 등 (empty string if none)
+- examples: 1-2 NEW short, simple example sentences (A1-A2 beginner level) that reuse a key word or the main grammar pattern of this sentence — each with "french" and "korean" (natural Korean translation). They must be different from the original sentence and easy for beginners. (empty array if nothing useful)
 Cover the whole transcript in order. Do not skip any chunk. Also provide a short title for the lesson.`;
 }
 
@@ -1020,7 +1038,15 @@ const TEXT_RESPONSE_SCHEMA = {
             }
           },
           expression: { type: "STRING" },
-          pronunciation: { type: "STRING" }
+          pronunciation: { type: "STRING" },
+          examples: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: { french: { type: "STRING" }, korean: { type: "STRING" } },
+              required: ["french", "korean"]
+            }
+          }
         },
         required: ["english", "korean"]
       }
@@ -1042,6 +1068,7 @@ For EVERY sentence provide:
 - vocabulary: 0-4 key words/phrases with concise Korean meanings (only genuinely useful ones)
 - expression: one key grammar pattern or expression explained briefly in Korean (empty string if none)
 - pronunciation: one French pronunciation tip in Korean — liaison(리에종), enchaînement, 비음, 묵음 등 (empty string if none)
+- examples: 1-2 NEW short, simple example sentences (A1-A2 beginner level) that reuse a key word or the main grammar pattern of this sentence — each with "french" and "korean" (natural Korean translation). They must be different from the original sentence and easy for beginners. (empty array if nothing useful)
 Cover the whole text. Do not skip sentences. Also provide a short title for the lesson.`;
 }
 
@@ -1112,23 +1139,28 @@ $('btnSample').onclick = (e) => {
       { id:1, start:52, end:63, english:"Bonjour ! Je suis ravie de vous rencontrer aujourd'hui.",
         korean:"안녕하세요! 오늘 여러분을 만나게 되어 기쁩니다.",
         vocabulary:[{phrase:"être ravi(e) de",meaning:"~하게 되어 기쁘다"},{phrase:"rencontrer",meaning:"만나다"}],
-        expression:"être ravi(e) de + 동사원형 — 격식 있는 기쁨 표현 (여성은 ravie)", pronunciation:"ravie의 r는 목젖을 울리는 프랑스어 R — '하비'에 가깝게" },
+        expression:"être ravi(e) de + 동사원형 — 격식 있는 기쁨 표현 (여성은 ravie)", pronunciation:"ravie의 r는 목젖을 울리는 프랑스어 R — '하비'에 가깝게",
+        examples:[{french:"Je suis ravi de te voir !",korean:"너를 만나서 기뻐! (남성 화자)"},{french:"Enchantée, je suis ravie de faire votre connaissance.",korean:"처음 뵙겠습니다, 알게 되어 기쁩니다. (여성 화자)"}] },
       { id:2, start:63, end:68, english:"Je m'appelle Marie et j'habite à Paris.",
         korean:"제 이름은 마리이고, 파리에 살고 있습니다.",
         vocabulary:[{phrase:"s'appeler",meaning:"이름이 ~이다"},{phrase:"habiter à",meaning:"~에 살다"}],
-        expression:"Je m'appelle ~ — 자기소개의 기본 패턴", pronunciation:"j'habite의 h는 묵음 — '자비트'처럼 연결해서 발음" },
+        expression:"Je m'appelle ~ — 자기소개의 기본 패턴", pronunciation:"j'habite의 h는 묵음 — '자비트'처럼 연결해서 발음",
+        examples:[{french:"Je m'appelle Minsu, et toi ?",korean:"내 이름은 민수야, 너는?"},{french:"Elle habite à Séoul.",korean:"그녀는 서울에 살아요."}] },
       { id:3, start:68, end:74, english:"J'apprends le français depuis six mois.",
         korean:"저는 6개월 전부터 프랑스어를 배우고 있습니다.",
         vocabulary:[{phrase:"apprendre",meaning:"배우다"},{phrase:"depuis",meaning:"~이래로, ~전부터"}],
-        expression:"depuis + 기간 — 현재까지 계속되는 일은 현재형으로 표현", pronunciation:"six mois에서 six의 x는 /si/로 — 자음 앞에서 묵음" },
+        expression:"depuis + 기간 — 현재까지 계속되는 일은 현재형으로 표현", pronunciation:"six mois에서 six의 x는 /si/로 — 자음 앞에서 묵음",
+        examples:[{french:"J'apprends le piano depuis un an.",korean:"저는 1년 전부터 피아노를 배우고 있어요."},{french:"Il travaille ici depuis trois mois.",korean:"그는 3개월 전부터 여기서 일해요."}] },
       { id:4, start:74, end:80, english:"Aujourd'hui, je vais vous raconter trois histoires.",
         korean:"오늘 저는 여러분께 세 가지 이야기를 들려드리려 합니다.",
         vocabulary:[{phrase:"raconter",meaning:"이야기하다, 들려주다"}],
-        expression:"aller + 동사원형 — 가까운 미래(~할 것이다)", pronunciation:"trois histoires는 리에종 — '트후아 지스투아흐'" },
+        expression:"aller + 동사원형 — 가까운 미래(~할 것이다)", pronunciation:"trois histoires는 리에종 — '트후아 지스투아흐'",
+        examples:[{french:"Je vais manger une baguette.",korean:"나는 바게트를 먹을 거야."},{french:"Nous allons visiter Paris demain.",korean:"우리는 내일 파리를 구경할 거예요."}] },
       { id:5, start:80, end:86, english:"C'est tout. Rien de spécial. Juste trois histoires.",
         korean:"그게 전부입니다. 특별한 건 없어요. 그저 세 가지 이야기일 뿐입니다.",
         vocabulary:[{phrase:"rien de spécial",meaning:"특별한 것 없음"}],
-        expression:"C'est tout — '그게 다예요'라는 마무리 표현", pronunciation:"짧은 문장 3개의 리듬을 살려 끊어 읽기" }
+        expression:"C'est tout — '그게 다예요'라는 마무리 표현", pronunciation:"짧은 문장 3개의 리듬을 살려 끊어 읽기",
+        examples:[{french:"C'est tout pour aujourd'hui !",korean:"오늘은 여기까지예요!"},{french:"Rien de spécial ce week-end.",korean:"이번 주말엔 특별한 일 없어."}] }
     ]
   };
   saveLesson(lesson);
@@ -1282,6 +1314,7 @@ function renderSentence(){
   const pr = $('sentPron');
   pr.style.display = s.pronunciation ? 'block' : 'none';
   pr.textContent = s.pronunciation ? '🗣 ' + s.pronunciation : '';
+  renderExamples(s.examples || []);
   $('segTime').textContent = fmtTime(s.start) + ' → ' + fmtTime(s.end);
   updateReviewBtn();
   if(continuousMode){
@@ -1296,6 +1329,46 @@ function renderSentence(){
   refreshAiWave();
   renderSidebar();
 }
+// 예문 블록: 초보자용 쉬운 예문 + AI 음성 재생
+function renderExamples(list){
+  const box = $('sentExamples');
+  box.innerHTML = '';
+  box.style.display = list.length ? 'block' : 'none';
+  if(!list.length) return;
+  const head = document.createElement('div');
+  head.className = 'ex-head';
+  head.textContent = '📝 예문으로 익히기';
+  box.appendChild(head);
+  list.forEach(ex => {
+    const line = document.createElement('div');
+    line.className = 'ex-line';
+    line.innerHTML = `<button class="primary ex-play" title="AI 음성으로 듣기">▶</button>
+      <div class="ex-txt"><span class="fr">${escapeHtml(ex.french)}</span><span class="ko">${escapeHtml(ex.korean)}</span></div>`;
+    line.querySelector('.ex-play').onclick = async (ev) => {
+      const b = ev.currentTarget;
+      try{
+        stopTts(); stopSegment();
+        const k = LS.get('fs_ttsModel', DEFAULT_TTS_MODEL) + '|' + $('selVoice').value + '|natural|' + ex.french;
+        let blob = await ttsCacheGet(k);
+        if(!blob){
+          b.disabled = true; b.textContent = '…';
+          blob = await fetchGeminiTts(ex.french, $('selVoice').value, 'natural');
+          await ttsCachePut(k, blob);
+        }
+        const u = URL.createObjectURL(blob);
+        aiAudio = new Audio(u);
+        aiAudio.onended = aiAudio.onerror = () => URL.revokeObjectURL(u);
+        aiAudio.play();
+      }catch(e){
+        alert('예문 음성 재생 실패: ' + e.message);
+      }finally{
+        b.disabled = false; b.textContent = '▶';
+      }
+    };
+    box.appendChild(line);
+  });
+}
+
 function fmtTime(t){
   t = Math.max(0, t);
   const m = Math.floor(t / 60), s = (t % 60).toFixed(1);
