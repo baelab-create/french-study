@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# 앱에서 내보낸 백업 파일 (개인 학습 데이터 — 저장소에 올리지 않음)
+french-study-backup-*.json
+
+# 로그·임시 파일
+*.log
+*.tmp
